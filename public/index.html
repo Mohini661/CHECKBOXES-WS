@@ -125,11 +125,24 @@
         text-align: center;
         font-size: 1.1rem;
         color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 3rem;
+        margin-bottom: 1rem;
         font-weight: 300;
         letter-spacing: 1px;
         position: relative;
         z-index: 1;
+      }
+
+      .alert {
+        max-width: 1400px;
+        margin: 0 auto 2rem;
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        background: rgba(255, 75, 75, 0.15);
+        border: 1px solid rgba(255, 75, 75, 0.35);
+        color: #ffeaea;
+        font-weight: 500;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
       }
 
       #container {
@@ -306,14 +319,28 @@
   <body>
     <h1>Checkboxes</h1>
     <div class="subtitle">Interactive Checkbox Collection</div>
+    <div id="alert" class="alert" hidden></div>
     <div id="container">
       <script src="/socket.io/socket.io.js"></script>
       <script>
         const socket = io();
         const container = document.getElementById("container");
+        const alertBox = document.getElementById("alert");
         const CHECKBO_COUNT = 100;
 
-        socket.on("server:checkbox-change", (data) => {
+        const showError = (message) => {
+          if (!message) {
+            alertBox.hidden = true;
+            alertBox.textContent = "";
+            return;
+          }
+          alertBox.textContent = message;
+          alertBox.hidden = false;
+        };
+
+        socket.on("server-error", (data) => {
+          const errorMessage = data?.error;
+          showError(errorMessage || "An unexpected server error occurred.");
           console.log("Socket Server Event: ", data);
           const { index, checked } = data;
 
